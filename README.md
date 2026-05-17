@@ -10,8 +10,8 @@ A small browser game for Norway's Constitution Day. Walk around a festive park, 
     <td align="center"><b>English</b></td>
   </tr>
   <tr>
-    <td><img src="docs/screenshots/menu-no.png" width="360" alt="Main menu — Norwegian"/></td>
-    <td><img src="docs/screenshots/menu-en.png" width="360" alt="Main menu — English"/></td>
+    <td><img src="docs/screenshots/menu-no.png" width="360" alt="Main menu - Norwegian"/></td>
+    <td><img src="docs/screenshots/menu-en.png" width="360" alt="Main menu - English"/></td>
     <td><img src="docs/screenshots/ingame.png" width="360" alt="In-game screenshot"/></td>
   </tr>
 </table>
@@ -29,7 +29,7 @@ A small browser game for Norway's Constitution Day. Walk around a festive park, 
 
 ## Tech
 
-- [Phaser 3](https://phaser.io/) — game framework
+- [Phaser 3](https://phaser.io/) - game framework
 - All graphics generated procedurally in JavaScript - no external assets
 - Music: *Gammel Jegermarsj* (traditional Norwegian march)
 
