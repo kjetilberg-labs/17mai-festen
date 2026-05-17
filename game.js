@@ -805,7 +805,7 @@ class MenuScene extends Phaser.Scene {
       .setStrokeStyle(2, 0xEF2B2D, 1);
 
     // Norwegian flag
-    const fx = W / 2 - 90, fy = 52, fw = 180, fh = 120;
+    const fx = W / 2 - 90, fy = 66, fw = 180, fh = 120;
     const g = this.add.graphics();
     g.fillStyle(0x9B7A40); g.fillRect(fx - 8, fy - 12, 8, fh + 24);  // pole
     g.fillStyle(0xEF2B2D); g.fillRect(fx, fy, fw, fh);
@@ -813,8 +813,8 @@ class MenuScene extends Phaser.Scene {
     g.fillStyle(0x002868); g.fillRect(fx, fy + 54, fw, 12); g.fillRect(fx + 70, fy, 12, fh);
 
     // Title
-    this.add.text(W / 2, 202, t('title'), {
-      fontSize: '36px', fontStyle: 'bold',
+    this.add.text(W / 2, 214, t('title'), {
+      fontSize: '28px', fontStyle: 'bold',
       fill: '#FFD700', stroke: '#000000', strokeThickness: 4,
     }).setOrigin(0.5);
 
