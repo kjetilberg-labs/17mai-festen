@@ -1218,25 +1218,29 @@ class GameScene extends Phaser.Scene {
 
   _setupHUD() {
     const D = 150;
-    this._hudBg = this.add.rectangle(0, 0, 100, 28, 0x000000, 0.60).setDepth(D);
-    this._hudScore = this.add.text(0, 0, '', {
+
+    // Dedicated UI camera — zoom 1, no follow — renders HUD at fixed screen coords.
+    // Must be created before HUD objects so we can exclude pre-existing world objects.
+    this._uiCam = this.cameras.add(0, 0, 800, 600).setName('ui').setScroll(0, 0);
+    // Ignore every scene object that exists right now (world, NPCs, items, dialogue).
+    this._uiCam.ignore(this.children.getAll());
+
+    // HUD objects are created AFTER the ignore call → only visible through _uiCam.
+    this._hudBg = this.add.rectangle(400, 14, 800, 28, 0x000000, 0.60).setDepth(D);
+    this._hudScore = this.add.text(5, 6, '', {
       fontSize: '13px', fill: '#ffffff', stroke: '#000', strokeThickness: 2,
     }).setDepth(D + 1);
-    this._hudTimer = this.add.text(0, 0, '', {
+    this._hudTimer = this.add.text(795, 6, '', {
       fontSize: '13px', fill: '#ffffff', stroke: '#000', strokeThickness: 2,
     }).setDepth(D + 1).setOrigin(1, 0);
-    this._hudTitle = this.add.text(0, 0, t('title'), {
+    this._hudTitle = this.add.text(400, 6, t('title'), {
       fontSize: '13px', fill: '#FFD700', stroke: '#000', strokeThickness: 2,
     }).setDepth(D + 1).setOrigin(0.5, 0);
-    this._updateHUD();
-  }
 
-  _updateHUDLayout(cam) {
-    const { x, y, width } = cam.worldView;
-    this._hudBg   .setPosition(x + width / 2, y + 14).setSize(width, 28);
-    this._hudScore.setPosition(x + 5, y + 6);
-    this._hudTimer.setPosition(x + width - 5, y + 6);
-    this._hudTitle.setPosition(x + width / 2, y + 6);
+    // Main camera must not render HUD (uiCam handles it).
+    this.cameras.main.ignore([this._hudBg, this._hudScore, this._hudTimer, this._hudTitle]);
+
+    this._updateHUD();
   }
 
   _updateHUD() {
@@ -1357,6 +1361,12 @@ class GameScene extends Phaser.Scene {
       if (this._music) this._music.stop();
       this.scene.start('MenuScene');
     });
+
+    // Pause overlay lives on uiCam (fixed screen coords); exclude from main camera.
+    this.cameras.main.ignore([
+      this._pauseBg, this._pauseTitleText, this._pauseControlsText,
+      this._pauseBtnContinue, this._pauseBtnMenu,
+    ]);
   }
 
   _makePauseBtn(label, cb) {
@@ -1380,18 +1390,16 @@ class GameScene extends Phaser.Scene {
       this.player.setVelocity(0, 0);
       if (this._timerEvt) this._timerEvt.paused = true;
 
-      const { x, y, width, height } = this.cameras.main.worldView;
-      const cx = x + width / 2, cy = y + height / 2;
-
-      this._pauseBg.setPosition(cx, cy).setSize(width, height).setVisible(true);
+      // Fixed screen-space positions — rendered by uiCam (zoom 1, no scroll).
+      this._pauseBg.setPosition(400, 300).setSize(800, 600).setVisible(true);
       this._pauseTitleText
-        .setPosition(cx, cy - 60).setText(t('pause_title')).setVisible(true);
+        .setPosition(400, 240).setText(t('pause_title')).setVisible(true);
       this._pauseControlsText
-        .setPosition(cx, cy + 50).setText(t('hint_controls')).setVisible(true);
+        .setPosition(400, 350).setText(t('hint_controls')).setVisible(true);
       this._pauseBtnContinue
-        .setPosition(cx - 105, cy - 10).setText(`  ${t('pause_continue')}  `).setVisible(true);
+        .setPosition(295, 290).setText(`  ${t('pause_continue')}  `).setVisible(true);
       this._pauseBtnMenu
-        .setPosition(cx + 105, cy - 10).setText(`  ${t('btn_menu')}  `).setVisible(true);
+        .setPosition(505, 290).setText(`  ${t('btn_menu')}  `).setVisible(true);
     } else {
       if (this._timerEvt) this._timerEvt.paused = false;
       [this._pauseBg, this._pauseTitleText, this._pauseControlsText,
@@ -1427,7 +1435,6 @@ class GameScene extends Phaser.Scene {
 
     this.dialogue.tick();
     this.dialogue.updateLayout(this.cameras.main);
-    this._updateHUDLayout(this.cameras.main);
 
     if (Phaser.Input.Keyboard.JustDown(this.eKey)) {
       if (this.dialogue.isActive()) this.dialogue.advance();
