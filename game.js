@@ -839,9 +839,11 @@ class MenuScene extends Phaser.Scene {
       this.scene.restart();
     });
 
-    this.add.text(W / 2, 536, t('hint_controls'), {
+    this.add.text(W / 2, 496, t('hint_controls'), {
       fontSize: '11px', fill: '#888888',
-    }).setOrigin(0.5);
+      align: 'center',
+      wordWrap: { width: 370 },
+    }).setOrigin(0.5, 0);
 
     // Enter / Space to start
     this.input.keyboard.once('keydown-ENTER', () => this.scene.start('GameScene'));
