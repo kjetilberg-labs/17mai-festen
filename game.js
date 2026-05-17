@@ -244,14 +244,16 @@ const NPC_DATA = [
     isFemale: false,
     activity: null,
     lines: [
-      'Heeei! Eg er Marius. Sover du godt? Eg har ikkje sove sidan tysdag...',
+      'Heeei! Eg er Marius, og eg er russ! Sover du godt? Eg har ikkje sove sidan tysdag...',
+      'Russen markerar slutten på videregående skole, og det feires med ein enorm festperiode på våren.',
       'Russen feirer fra 1. mai til 17. mai. Nesten tre uker med veldig lite søvn!',
-      'Men i dag kjører vi russebussen gjennom gatene. Absolutt verdt det!',
+      'Men i dag kjører vi russebussen vår gjennom gatene. Absolutt verdt det!',
     ],
     linesEn: [
-      'Heeey! I\'m Marius. Sleeping well? I haven\'t slept since Tuesday...',
+      'Heeey! I\'m Marius, and I\'m a russ! Sleeping well? I haven\'t slept since Tuesday...',
+      'The russ mark the end of high school, and it is celebrated with a huge party period in the spring.',
       'The russ celebrate from May 1st to May 17th. Nearly three weeks of very little sleep!',
-      'But today we drive the russ bus through the streets. Absolutely worth it!',
+      'But today we drive our russ bus through the streets. Absolutely worth it!',
     ],
   },
   {
