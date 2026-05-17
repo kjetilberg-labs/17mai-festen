@@ -33,10 +33,12 @@ const LANG_DATA = {
     btn_menu:      'Til menyen',
     hud_collected: 'Samlet',
     hud_time:      'Tid',
-    hud_music:     'M = lyd',
-    hint_close:    '[E] Lukk',
-    hint_continue: '[E] Fortsett',
-    hint_controls: 'Piltaster / WASD for å bevege deg · E for å snakke',
+    hud_music:      'M = lyd',
+    hint_close:     '[E] Lukk',
+    hint_continue:  '[E] Fortsett',
+    hint_controls:  'Piltaster / WASD for å bevege · E for å snakke · M for lyd · Esc = pause',
+    pause_title:    'Pause',
+    pause_continue: 'Fortsett',
     hint_replay:   'Space / Enter for å spille igjen',
     end_won:       'Gratulerer med dagen!',
     end_lost:      'Tiden er ute!',
@@ -80,7 +82,9 @@ const LANG_DATA = {
     hud_music:     'M = music',
     hint_close:    '[E] Close',
     hint_continue: '[E] Continue',
-    hint_controls: 'Arrow keys / WASD to move · E to talk',
+    hint_controls:  'Arrow keys / WASD to move · E to talk · M for music · Esc = pause',
+    pause_title:    'Paused',
+    pause_continue: 'Continue',
     hint_replay:   'Space / Enter to play again',
     end_won:       'Happy Constitution Day!',
     end_lost:      'Time\'s up!',
@@ -1031,6 +1035,7 @@ class GameScene extends Phaser.Scene {
     this._score    = 0;
     this._timeLeft = GAME_TIME;
     this._gameOver = false;
+    this._paused   = false;
 
     this._buildWorld();
     this._createPlayer();
@@ -1043,6 +1048,7 @@ class GameScene extends Phaser.Scene {
     this._spawnItems();
     this._setupHUD();
     this._setupTimer();
+    this._createPauseOverlay();
 
     this.physics.add.overlap(this.player, this._items, this._collectItem, null, this);
 
@@ -1328,7 +1334,69 @@ class GameScene extends Phaser.Scene {
       left:  Phaser.Input.Keyboard.KeyCodes.A,
       right: Phaser.Input.Keyboard.KeyCodes.D,
     });
-    this.eKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
+    this.eKey   = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
+    this.escKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
+  }
+
+  // ---- Pause overlay ----
+
+  _createPauseOverlay() {
+    const D = 175;
+    this._pauseBg = this.add.rectangle(0, 0, 100, 100, 0x000000, 0.75)
+      .setDepth(D).setVisible(false);
+    this._pauseTitleText = this.add.text(0, 0, '', {
+      fontSize: '34px', fontStyle: 'bold',
+      fill: '#FFD700', stroke: '#000000', strokeThickness: 5,
+    }).setDepth(D + 1).setVisible(false).setOrigin(0.5);
+    this._pauseControlsText = this.add.text(0, 0, '', {
+      fontSize: '12px', fill: '#bbbbbb', align: 'center',
+      stroke: '#000', strokeThickness: 2,
+    }).setDepth(D + 1).setVisible(false).setOrigin(0.5);
+    this._pauseBtnContinue = this._makePauseBtn('', () => this._togglePause());
+    this._pauseBtnMenu     = this._makePauseBtn('', () => {
+      if (this._music) this._music.stop();
+      this.scene.start('MenuScene');
+    });
+  }
+
+  _makePauseBtn(label, cb) {
+    const btn = this.add.text(0, 0, label, {
+      fontSize: '20px', fill: '#ffffff',
+      backgroundColor: '#7A0F0F',
+      padding: { x: 22, y: 10 },
+      stroke: '#000000', strokeThickness: 3,
+    }).setDepth(176).setVisible(false).setOrigin(0.5)
+      .setInteractive({ useHandCursor: true });
+    btn.on('pointerover', () => { btn.setStyle({ fill: '#FFD700', backgroundColor: '#EF2B2D' }); btn.setScale(1.04); });
+    btn.on('pointerout',  () => { btn.setStyle({ fill: '#ffffff', backgroundColor: '#7A0F0F' }); btn.setScale(1);    });
+    btn.on('pointerdown', cb);
+    return btn;
+  }
+
+  _togglePause() {
+    this._paused = !this._paused;
+
+    if (this._paused) {
+      this.player.setVelocity(0, 0);
+      if (this._timerEvt) this._timerEvt.paused = true;
+
+      const { x, y, width, height } = this.cameras.main.worldView;
+      const cx = x + width / 2, cy = y + height / 2;
+
+      this._pauseBg.setPosition(cx, cy).setSize(width, height).setVisible(true);
+      this._pauseTitleText
+        .setPosition(cx, cy - 60).setText(t('pause_title')).setVisible(true);
+      this._pauseControlsText
+        .setPosition(cx, cy + 50).setText(t('hint_controls')).setVisible(true);
+      this._pauseBtnContinue
+        .setPosition(cx - 105, cy - 10).setText(`  ${t('pause_continue')}  `).setVisible(true);
+      this._pauseBtnMenu
+        .setPosition(cx + 105, cy - 10).setText(`  ${t('btn_menu')}  `).setVisible(true);
+    } else {
+      if (this._timerEvt) this._timerEvt.paused = false;
+      [this._pauseBg, this._pauseTitleText, this._pauseControlsText,
+       this._pauseBtnContinue, this._pauseBtnMenu].forEach(o => o.setVisible(false));
+    }
   }
 
   // ---- Helpers ----
@@ -1347,7 +1415,15 @@ class GameScene extends Phaser.Scene {
   // ---- Update ----
 
   update() {
-    if (this._gameOver) { this.player.setVelocity(0, 0); return; }
+    // Escape toggles pause (not during game over or active dialogue)
+    if (Phaser.Input.Keyboard.JustDown(this.escKey) && !this._gameOver && !this.dialogue.isActive()) {
+      this._togglePause();
+    }
+
+    if (this._gameOver || this._paused) {
+      this.player.setVelocity(0, 0);
+      return;
+    }
 
     this.dialogue.tick();
     this.dialogue.updateLayout(this.cameras.main);
