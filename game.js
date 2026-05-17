@@ -178,7 +178,7 @@ const NPC_DATA = [
     lines: [
       'Hei! Eg heiter Nora. Emma sitt ved siden av meg; vi er tvillinger!',
       'Eg skjønner meg ikkje på folk som vil ha lompe til pølsa. Berre brød, takk.',
-      'Emma meiner eg har dårleg smak. Ho tek feil, sjølvsagt...',
+      'Emma meiner eg har dårleg smak. Ho tar feil, sjølvsagt...',
     ],
     linesEn: [
       'Hi! I\'m Nora. Emma is sitting next to me; we\'re twins!',
@@ -188,7 +188,7 @@ const NPC_DATA = [
   },
   {
     id: 'emma', name: 'Emma',
-    col: 13, row: 19,
+    col: 12, row: 19,
     hair: 0xAA2015, jacket: 0x1A0A20, skin: 0xf5cba7,
     isFemale: true, seated: true,
     activity: 'is',
@@ -585,14 +585,14 @@ function makeTree(scene) {
   g.generateTexture('tree', 40, 40); g.destroy();
 }
 
-// Wooden park bench — 2 tiles wide (80×40) for Nora & Emma
+// Wooden park bench — fits two adjacent characters (52×40)
 function makeBench(scene) {
-  const W = 80;
+  const W = 52;
   const g = scene.make.graphics({ x: 0, y: 0, add: false });
   g.fillStyle(0x6B4F14);
-  g.fillRect(4,  24, 5, 14);
-  g.fillRect(37, 24, 5, 14);
-  g.fillRect(71, 24, 5, 14);
+  g.fillRect(3,  24, 5, 14);
+  g.fillRect(23, 24, 5, 14);
+  g.fillRect(44, 24, 5, 14);
   g.fillStyle(0xA07830);
   g.fillRect(2, 19, W - 4, 5);
   g.fillRect(2, 25, W - 4, 4);
@@ -601,9 +601,9 @@ function makeBench(scene) {
   g.fillStyle(0xA07830);
   g.fillRect(2,  9, W - 4, 5);
   g.fillStyle(0x6B4F14);
-  g.fillRect(6,   9, 4, 14);
-  g.fillRect(38,  9, 4, 14);
-  g.fillRect(70,  9, 4, 14);
+  g.fillRect(5,   9, 4, 14);
+  g.fillRect(23,  9, 4, 14);
+  g.fillRect(43,  9, 4, 14);
   g.generateTexture('bench', W, 40); g.destroy();
 }
 
@@ -1080,8 +1080,8 @@ class GameScene extends Phaser.Scene {
       }
     }
 
-    // Bench (80 px wide, centred on col 12, row 19)
-    this.add.image(12 * TILE + TILE / 2, 19 * TILE + TILE / 2, 'bench').setDepth(0.8);
+    // Bench (52 px wide, centred between cols 11 and 12, row 19)
+    this.add.image(11.5 * TILE + TILE / 2, 19 * TILE + TILE / 2, 'bench').setDepth(0.8);
 
     // Flag poles along the parade (row 12, every 4 cols)
     for (let col = 1; col < MAP_COLS; col += 4) {
