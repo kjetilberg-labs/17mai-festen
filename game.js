@@ -644,9 +644,9 @@ function makeFlagg(scene) {
   // edge never wraps.  All drawing is inset by 1 px so no colour sits on any edge.
   const g = scene.make.graphics({ x: 0, y: 0, add: false });
   g.fillStyle(0x9B7A40); g.fillRect(8,  3, 3, 30);
-  g.fillStyle(0xEF2B2D); g.fillRect(11, 3, 22, 18);
-  g.fillStyle(0xFFFFFF); g.fillRect(11, 10, 22, 4); g.fillRect(18, 3, 4, 18);
-  g.fillStyle(0x002868); g.fillRect(11, 11, 22, 2); g.fillRect(19, 3, 2, 18);
+  g.fillStyle(0xBA0C2F); g.fillRect(11, 3, 22, 16);
+  g.fillStyle(0xFFFFFF); g.fillRect(11,  9, 22,  4); g.fillRect(17, 3, 4, 16);
+  g.fillStyle(0x00205B); g.fillRect(11, 10, 22,  2); g.fillRect(18, 3, 2, 16);
   g.generateTexture('flagg', 34, 34); g.destroy();
 }
 
@@ -811,12 +811,13 @@ class MenuScene extends Phaser.Scene {
       .setStrokeStyle(2, 0xEF2B2D, 1);
 
     // Norwegian flag
-    const fx = W / 2 - 90, fy = 66, fw = 180, fh = 120;
+    // fw:fh = 22:16 (official ratio), scale = 7.5 — cross arms at 6×7.5=45 (white,30) / 7×7.5≈52 (blue,16)
+    const fw = 165, fh = 120, fx = (W - fw) / 2, fy = 66;
     const g = this.add.graphics();
     g.fillStyle(0x9B7A40); g.fillRect(fx - 8, fy - 12, 8, fh + 24);  // pole
-    g.fillStyle(0xEF2B2D); g.fillRect(fx, fy, fw, fh);
-    g.fillStyle(0xFFFFFF); g.fillRect(fx, fy + 46, fw, 28); g.fillRect(fx + 62, fy, 28, fh);
-    g.fillStyle(0x002868); g.fillRect(fx, fy + 54, fw, 12); g.fillRect(fx + 70, fy, 12, fh);
+    g.fillStyle(0xBA0C2F); g.fillRect(fx, fy, fw, fh);
+    g.fillStyle(0xFFFFFF); g.fillRect(fx, fy + 45, fw, 30); g.fillRect(fx + 45, fy, 30, fh);
+    g.fillStyle(0x00205B); g.fillRect(fx, fy + 52, fw, 16); g.fillRect(fx + 52, fy, 16, fh);
 
     // Title
     this.add.text(W / 2, 214, t('title'), {
@@ -870,11 +871,12 @@ class CreditsScene extends Phaser.Scene {
     this.add.rectangle(W / 2, H / 2, W, H, 0x081A08);
 
     // Small flag
-    const fx = W / 2 - 55, fy = 28, fw = 110, fh = 74;
+    // fw:fh = 22:16 (official ratio), scale = 5 — cross arms at 6×5=30 (white,20) / 7×5=35 (blue,10)
+    const fx = W / 2 - 55, fy = 28, fw = 110, fh = 80;
     const g = this.add.graphics();
-    g.fillStyle(0xEF2B2D); g.fillRect(fx, fy, fw, fh);
-    g.fillStyle(0xFFFFFF); g.fillRect(fx, fy + 28, fw, 18); g.fillRect(fx + 37, fy, 18, fh);
-    g.fillStyle(0x002868); g.fillRect(fx, fy + 33, fw,  8); g.fillRect(fx + 42, fy,  8, fh);
+    g.fillStyle(0xBA0C2F); g.fillRect(fx, fy, fw, fh);
+    g.fillStyle(0xFFFFFF); g.fillRect(fx, fy + 30, fw, 20); g.fillRect(fx + 30, fy, 20, fh);
+    g.fillStyle(0x00205B); g.fillRect(fx, fy + 35, fw, 10); g.fillRect(fx + 35, fy, 10, fh);
 
     this.add.text(W / 2, 120, t('credits_title'), {
       fontSize: '30px', fontStyle: 'bold',
@@ -1495,12 +1497,13 @@ class EndScene extends Phaser.Scene {
     this.add.rectangle(W / 2, H - 70, W, 140, won ? 0x0A3A0A : 0x0F0F0F);
 
     // Norwegian flag
-    const fx = W / 2 - 60, fy = 30, fw = 120, fh = 80;
+    // fw:fh = 22:16 (official ratio), scale = 5 — cross arms at 6×5=30 (white,20) / 7×5=35 (blue,10)
+    const fx = W / 2 - 55, fy = 30, fw = 110, fh = 80;
     const g = this.add.graphics();
     g.fillStyle(0x9B7A40); g.fillRect(fx - 4, fy, 4, fh + 28);
-    g.fillStyle(0xEF2B2D); g.fillRect(fx, fy, fw, fh);
-    g.fillStyle(0xFFFFFF); g.fillRect(fx, fy + 31, fw, 18); g.fillRect(fx + 42, fy, 18, fh);
-    g.fillStyle(0x002868); g.fillRect(fx, fy + 35, fw, 10); g.fillRect(fx + 46, fy, 10, fh);
+    g.fillStyle(0xBA0C2F); g.fillRect(fx, fy, fw, fh);
+    g.fillStyle(0xFFFFFF); g.fillRect(fx, fy + 30, fw, 20); g.fillRect(fx + 30, fy, 20, fh);
+    g.fillStyle(0x00205B); g.fillRect(fx, fy + 35, fw, 10); g.fillRect(fx + 35, fy, 10, fh);
 
     this.add.text(W / 2, 138, t(won ? 'end_won' : 'end_lost'), {
       fontSize: '34px', fontStyle: 'bold',
