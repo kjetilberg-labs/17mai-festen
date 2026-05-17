@@ -640,12 +640,14 @@ function makeIs(scene) {
 }
 
 function makeFlagg(scene) {
+  // 34×34 (non-power-of-two) so WebGL uses CLAMP_TO_EDGE and the right/bottom
+  // edge never wraps.  All drawing is inset by 1 px so no colour sits on any edge.
   const g = scene.make.graphics({ x: 0, y: 0, add: false });
-  g.fillStyle(0x9B7A40); g.fillRect(7, 2, 3, 30);
-  g.fillStyle(0xEF2B2D); g.fillRect(10, 2, 22, 18);
-  g.fillStyle(0xFFFFFF); g.fillRect(10, 9, 22, 4); g.fillRect(17, 2, 4, 18);
-  g.fillStyle(0x002868); g.fillRect(10, 10, 22, 2); g.fillRect(18, 2, 2, 18);
-  g.generateTexture('flagg', 32, 32); g.destroy();
+  g.fillStyle(0x9B7A40); g.fillRect(8,  3, 3, 30);
+  g.fillStyle(0xEF2B2D); g.fillRect(11, 3, 22, 18);
+  g.fillStyle(0xFFFFFF); g.fillRect(11, 10, 22, 4); g.fillRect(18, 3, 4, 18);
+  g.fillStyle(0x002868); g.fillRect(11, 11, 22, 2); g.fillRect(19, 3, 2, 18);
+  g.generateTexture('flagg', 34, 34); g.destroy();
 }
 
 function makeTrumpet(scene) {
