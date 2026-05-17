@@ -681,6 +681,31 @@ function makeTrumpet(scene) {
   g.generateTexture('trumpet', 32, 32); g.destroy();
 }
 
+function makeSpeakerTextures(scene) {
+  // 18×16 pixel-art speaker icon — two variants (on / off)
+  [false, true].forEach(muted => {
+    const g = scene.make.graphics({ x: 0, y: 0, add: false });
+    const col = muted ? 0x888888 : 0xFFD700;
+    g.fillStyle(col);
+    g.fillRect(1, 5, 4, 6);                           // speaker box
+    g.fillTriangle(5, 4, 5, 12, 10, 14);              // cone, wide base on right
+    g.fillTriangle(5, 4, 10, 2, 10, 14);              // cone, complete shape
+    if (!muted) {
+      g.fillRect(11, 5, 1, 6);                        // inner wave
+      g.fillRect(13, 3, 1, 10);                       // outer wave
+      g.fillRect(15, 1, 1, 14);                       // widest wave
+    } else {
+      g.fillStyle(0xFF4444);
+      g.fillRect(12, 4,  2, 2); g.fillRect(14, 6,  2, 2); // \ diagonal
+      g.fillRect(16, 8,  2, 2);
+      g.fillRect(12, 10, 2, 2); g.fillRect(14, 8,  2, 2); // / diagonal
+      g.fillRect(16, 6,  2, 2);
+    }
+    g.generateTexture(muted ? 'speaker_off' : 'speaker_on', 18, 16);
+    g.destroy();
+  });
+}
+
 function makeBallong(scene, color, key) {
   const g = scene.make.graphics({ x: 0, y: 0, add: false });
   g.fillStyle(color);        g.fillEllipse(16, 13, 22, 26);
@@ -780,7 +805,7 @@ class BootScene extends Phaser.Scene {
 
   create() {
     makeGrass(this); makePath(this); makeTree(this); makeBench(this);
-    makePolse(this); makeBrus(this); makeIs(this); makeFlagg(this); makeTrumpet(this);
+    makePolse(this); makeBrus(this); makeIs(this); makeFlagg(this); makeTrumpet(this); makeSpeakerTextures(this);
     makeBallong(this, 0xff3333, 'ballong_red');
     makeBallong(this, 0x3399ff, 'ballong_blue');
     makeBallong(this, 0xffcc00, 'ballong_yellow');
@@ -1065,7 +1090,12 @@ class GameScene extends Phaser.Scene {
     if (prev) prev.destroy();
     this._music = this.sound.add('bgm', { loop: true, volume: 0.4 });
     this._music.play();
-    this.input.keyboard.on('keydown-M', () => this._music.setMute(!this._music.mute));
+    this._musicMuted = false;
+    this.input.keyboard.on('keydown-M', () => {
+      this._musicMuted = !this._musicMuted;
+      this._music.setMute(this._musicMuted);
+      this._updateMusicIcon();
+    });
   }
 
   // ---- World ----
@@ -1238,15 +1268,16 @@ class GameScene extends Phaser.Scene {
     this._hudScore = this.add.text(5, 6, '', {
       fontSize: '13px', fill: '#ffffff', stroke: '#000', strokeThickness: 2,
     }).setDepth(D + 1);
-    this._hudTimer = this.add.text(795, 6, '', {
+    this._hudTimer = this.add.text(770, 6, '', {
       fontSize: '13px', fill: '#ffffff', stroke: '#000', strokeThickness: 2,
     }).setDepth(D + 1).setOrigin(1, 0);
     this._hudTitle = this.add.text(400, 6, t('title'), {
       fontSize: '13px', fill: '#FFD700', stroke: '#000', strokeThickness: 2,
     }).setDepth(D + 1).setOrigin(0.5, 0);
+    this._hudMusicIcon = this.add.image(793, 14, 'speaker_on').setDepth(D + 1).setOrigin(1, 0.5);
 
     // Main camera must not render HUD (uiCam handles it).
-    this.cameras.main.ignore([this._hudBg, this._hudScore, this._hudTimer, this._hudTitle]);
+    this.cameras.main.ignore([this._hudBg, this._hudScore, this._hudTimer, this._hudTitle, this._hudMusicIcon]);
 
     this._updateHUD();
   }
@@ -1256,6 +1287,10 @@ class GameScene extends Phaser.Scene {
     const s = this._timeLeft;
     this._hudTimer.setText(`${t('hud_time')}: ${s}s`);
     this._hudTimer.setFill(s <= 15 ? '#ff4444' : '#ffffff');
+  }
+
+  _updateMusicIcon() {
+    this._hudMusicIcon.setTexture(this._musicMuted ? 'speaker_off' : 'speaker_on');
   }
 
   // ---- Timer ----
