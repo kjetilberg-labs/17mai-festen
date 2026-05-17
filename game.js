@@ -216,6 +216,74 @@ const NPC_DATA = [
       'Did you know that the Norwegian flag was officially adopted in 1821? Designed by Fredrik Meltzer!',
     ],
   },
+  {
+    id: 'ingrid', name: 'Ingrid',
+    col: 16, row: 22,
+    hair: 0xF0C830, jacket: 0x8B1A1A, skin: 0xf5cba7,
+    isFemale: true,
+    activity: null,
+    lines: [
+      'Hei! Eg heiter Ingrid. Visste du at det finnes over 400 ulike bunader i Norge?',
+      'Kvar region har sin bunad med ulike mønstre, fargar og sølvsmykker!',
+      'Kva for ein region bunad eg har på meg? Det skal eg ikkje seie! Men den er vakker...',
+    ],
+    linesEn: [
+      'Hi! I\'m Ingrid. Did you know there are over 400 different Bunad styles in Norway?',
+      'Each region has its own Bunad with unique patterns, colors, and silver jewelry!',
+      'Which region is mine from? I\'m not telling! But it is beautiful...',
+    ],
+  },
+  {
+    id: 'marius', name: 'Marius',
+    col: 28, row: 16,
+    hair: 0xD4B030, jacket: 0xCC0000, trousers: 0xCC0000, skin: 0xf0c090,
+    isFemale: false,
+    activity: null,
+    lines: [
+      'Heeei! Eg er Marius. Sover du godt? Eg har ikkje sove sidan tysdag...',
+      'Russen feirer fra 1. mai til 17. mai. Nesten tre uker med veldig lite søvn!',
+      'Men i dag kjører vi russebussen gjennom gatene. Absolutt verdt det!',
+    ],
+    linesEn: [
+      'Heeey! I\'m Marius. Sleeping well? I haven\'t slept since Tuesday...',
+      'The russ celebrate from May 1st to May 17th. Nearly three weeks of very little sleep!',
+      'But today we drive the russ bus through the streets. Absolutely worth it!',
+    ],
+  },
+  {
+    id: 'olav', name: 'Olav',
+    col: 19, row: 5,
+    hair: 0x5C3310, jacket: 0x002868, skin: 0xe8b88a,
+    isFemale: false,
+    activity: 'trumpet',
+    lines: [
+      'JA VI ELSKER DETTE LANDET! *blåser i trompeten*',
+      'Nasjonalsangen blei skreven av Bjørnstjerne Bjørnson i 1859!',
+      'Eg øver på "Ja vi elsker" heile året berre for denne eine dagen!',
+    ],
+    linesEn: [
+      'JA VI ELSKER DETTE LANDET! *blows trumpet*',
+      'Our national anthem was written by Bjørnstjerne Bjørnson in 1859!',
+      'I practice "Ja vi elsker" all year just for this one day!',
+    ],
+  },
+  {
+    id: 'thea', name: 'Thea',
+    col: 33, row: 22,
+    hair: 0xB85A18, jacket: 0x1A3A6A, skin: 0xf5cba7,
+    isFemale: true,
+    activity: null,
+    lines: [
+      'Hei! Eg er Thea. Skulen hadde mange aktiviteter i dag! Sekkeløp, eggløp og ballkasting!',
+      'Mange barneskoler arrangerer 17. mai-leker for elevene om morgenen. Det er ein fin tradisjon!',
+      'Eg kom på tredjeplass i sekkeløpet. Neste år tek eg førsteplassen!',
+    ],
+    linesEn: [
+      'Hi! I\'m Thea. School had many activities today! Sack race, egg-and-spoon, and ball throwing!',
+      'Many Norwegian primary schools organize May 17th games for pupils in the morning. A lovely tradition!',
+      'I came third in the sack race. Next year I\'m taking first place!',
+    ],
+  },
 ];
 
 // =============================================================
@@ -318,9 +386,11 @@ function generateMap() {
 // =============================================================
 //  CHARACTER DRAWING
 // =============================================================
-function drawCharFront(g, ox, frameIdx, hair, jacket, detail, skin, isFemale) {
+function drawCharFront(g, ox, frameIdx, hair, jacket, detail, skin, isFemale, trousers = null) {
   const legs = [[27,9,27,9],[25,11,29,7],[29,7,25,11]];
   const [lsy, lh, rsy, rh] = legs[Math.min(frameIdx, 2)];
+  const legColor = trousers ?? 0x111122;
+  const coverall  = trousers !== null && trousers === jacket;
 
   g.fillStyle(0x000000, 0.18);
   g.fillEllipse(ox + 16, 38, 24, 6);
@@ -352,23 +422,38 @@ function drawCharFront(g, ox, frameIdx, hair, jacket, detail, skin, isFemale) {
     g.fillStyle(0x111111);
     g.fillRect(ox + 8,  lsy + lh + 2, 7, 3);
     g.fillRect(ox + 17, rsy + rh + 2, 7, 3);
-    g.fillStyle(0x111122);
+    g.fillStyle(legColor);
     g.fillRect(ox + 9,  lsy, 6, lh);
     g.fillRect(ox + 17, rsy, 6, rh);
-    g.fillStyle(0xf0f0f0);
-    g.fillRect(ox + 7, 14, 18, 14);
-    g.fillRect(ox + 4, 15, 4,  11);
-    g.fillRect(ox + 24, 15, 4, 11);
-    g.fillStyle(jacket);
-    g.fillRect(ox + 8, 14, 16, 14);
-    g.fillStyle(0xf0f0f0);
-    g.fillRect(ox + 7,  15, 2, 12);
-    g.fillRect(ox + 23, 15, 2, 12);
-    g.fillRect(ox + 15, 16, 2, 9);
-    g.fillStyle(0xD4AF37);
-    g.fillRect(ox + 14, 17, 2, 2);
-    g.fillRect(ox + 14, 21, 2, 2);
-    g.fillRect(ox + 14, 25, 2, 2);
+    if (coverall) {
+      // Full russ coverall — single colour head to toe
+      g.fillStyle(jacket);
+      g.fillRect(ox + 7, 14, 18, 14);
+      g.fillRect(ox + 4, 15, 4,  11);
+      g.fillRect(ox + 24, 15, 4, 11);
+      // Zip line
+      g.fillStyle(0x000000, 0.25);
+      g.fillRect(ox + 15, 14, 2, 14);
+      // White collar
+      g.fillStyle(0xf0f0f0);
+      g.fillRect(ox + 12, 14, 8, 3);
+    } else {
+      // Bunad — white shirt, coloured vest, gold buttons
+      g.fillStyle(0xf0f0f0);
+      g.fillRect(ox + 7, 14, 18, 14);
+      g.fillRect(ox + 4, 15, 4,  11);
+      g.fillRect(ox + 24, 15, 4, 11);
+      g.fillStyle(jacket);
+      g.fillRect(ox + 8, 14, 16, 14);
+      g.fillStyle(0xf0f0f0);
+      g.fillRect(ox + 7,  15, 2, 12);
+      g.fillRect(ox + 23, 15, 2, 12);
+      g.fillRect(ox + 15, 16, 2, 9);
+      g.fillStyle(0xD4AF37);
+      g.fillRect(ox + 14, 17, 2, 2);
+      g.fillRect(ox + 14, 21, 2, 2);
+      g.fillRect(ox + 14, 25, 2, 2);
+    }
   }
 
   g.fillStyle(0xeeeeee);
@@ -386,9 +471,10 @@ function drawCharFront(g, ox, frameIdx, hair, jacket, detail, skin, isFemale) {
   g.fillCircle(ox + 16, 3, 8);
 }
 
-function drawCharBack(g, ox, frameIdx, hair, jacket, isFemale) {
+function drawCharBack(g, ox, frameIdx, hair, jacket, isFemale, trousers = null) {
   const legs = [[27,9,27,9],[25,11,29,7],[29,7,25,11]];
   const [lsy, lh, rsy, rh] = legs[Math.min(frameIdx, 2)];
+  const legColor = trousers ?? 0x0d0d22;
 
   g.fillStyle(0x000000, 0.18);
   g.fillEllipse(ox + 16, 37, 24, 7);
@@ -411,7 +497,7 @@ function drawCharBack(g, ox, frameIdx, hair, jacket, isFemale) {
     g.fillStyle(0x0a0a0a);
     g.fillRect(ox + 8,  lsy + lh + 2, 7, 3);
     g.fillRect(ox + 17, rsy + rh + 2, 7, 3);
-    g.fillStyle(0x0d0d22);
+    g.fillStyle(legColor);
     g.fillRect(ox + 9,  lsy, 6, lh);
     g.fillRect(ox + 17, rsy, 6, rh);
     g.fillStyle(jacket);
@@ -558,6 +644,35 @@ function makeFlagg(scene) {
   g.generateTexture('flagg', 32, 32); g.destroy();
 }
 
+function makeTrumpet(scene) {
+  const g = scene.make.graphics({ x: 0, y: 0, add: false });
+  // Main tube
+  g.fillStyle(0xD4A017);
+  g.fillRect(2, 13, 20, 6);
+  // Bell (wide flared end, right)
+  g.fillTriangle(22, 10, 22, 22, 30, 16);
+  g.fillStyle(0xD4A017);
+  g.fillEllipse(30, 16, 5, 13);
+  // Valves (3 finger buttons on top)
+  g.fillStyle(0xA07810);
+  g.fillRect(7,  9, 4, 8);
+  g.fillRect(12, 9, 4, 8);
+  g.fillRect(17, 9, 4, 8);
+  // Valve caps (lighter tops)
+  g.fillStyle(0xE8BE30);
+  g.fillRect(7,  9, 4, 2);
+  g.fillRect(12, 9, 4, 2);
+  g.fillRect(17, 9, 4, 2);
+  // Mouthpiece (left end)
+  g.fillStyle(0xD4A017);
+  g.fillRect(0, 14, 4, 4);
+  g.fillCircle(1, 16, 2);
+  // Highlight stripe
+  g.fillStyle(0xF5D050, 0.45);
+  g.fillRect(2, 13, 20, 2);
+  g.generateTexture('trumpet', 32, 32); g.destroy();
+}
+
 function makeBallong(scene, color, key) {
   const g = scene.make.graphics({ x: 0, y: 0, add: false });
   g.fillStyle(color);        g.fillEllipse(16, 13, 22, 26);
@@ -601,11 +716,11 @@ function makePlayerSheet(scene) {
 function makeNPCTextures(scene) {
   const FW = 32, FH = 40;
   NPC_DATA.forEach(npc => {
-    const { id, hair, jacket, skin, isFemale, seated, patrol } = npc;
+    const { id, hair, jacket, trousers = null, skin, isFemale, seated, patrol } = npc;
 
     // Portrait (used in dialogue box)
     const gp = scene.make.graphics({ x: 0, y: 0, add: false });
-    drawCharFront(gp, 0, 0, hair, jacket, 0xcc2222, skin, isFemale);
+    drawCharFront(gp, 0, 0, hair, jacket, 0xcc2222, skin, isFemale, trousers);
     gp.generateTexture(`npc_${id}`, FW, FH); gp.destroy();
 
     if (seated) {
@@ -616,8 +731,8 @@ function makeNPCTextures(scene) {
 
     if (patrol) {
       const gw = scene.make.graphics({ x: 0, y: 0, add: false });
-      for (let f = 0; f < 3; f++) drawCharFront(gw, f * FW, f, hair, jacket, 0xcc2222, skin, isFemale);
-      for (let f = 0; f < 3; f++) drawCharBack(gw, (f + 3) * FW, f, hair, jacket, isFemale);
+      for (let f = 0; f < 3; f++) drawCharFront(gw, f * FW, f, hair, jacket, 0xcc2222, skin, isFemale, trousers);
+      for (let f = 0; f < 3; f++) drawCharBack(gw, (f + 3) * FW, f, hair, jacket, isFemale, trousers);
       gw.generateTexture(`npc_${id}_walk`, FW * 6, FH); gw.destroy();
 
       const tex = scene.textures.get(`npc_${id}_walk`);
@@ -657,7 +772,7 @@ class BootScene extends Phaser.Scene {
 
   create() {
     makeGrass(this); makePath(this); makeTree(this); makeBench(this);
-    makePolse(this); makeBrus(this); makeIs(this); makeFlagg(this);
+    makePolse(this); makeBrus(this); makeIs(this); makeFlagg(this); makeTrumpet(this);
     makeBallong(this, 0xff3333, 'ballong_red');
     makeBallong(this, 0x3399ff, 'ballong_blue');
     makeBallong(this, 0xffcc00, 'ballong_yellow');
