@@ -1,6 +1,6 @@
 # 17. mai-festen!
 
-A small browser game for Norway's Constitution Day. Walk around a festive park, collect hot dogs, soda, ice cream, balloons, and flags - and talk to the locals. Available in Norwegian and English. **[Play it here](https://kjetilberg-labs.github.io/17mai/)**
+A small browser game for Norway's Constitution Day. Walk around a festive park, collect hot dogs, soda, ice cream, balloons, and flags - and talk to the locals. Available in Norwegian and English. **[Play it here](https://kjetilberg-labs.github.io/17mai-festen/)**
 
 ## Screenshots
 
